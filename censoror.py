@@ -18,7 +18,7 @@ email_name_count = 0
 
 
 # Load spaCy model
-# spacy.cli.download("en_core_web_md")
+spacy.cli.download("en_core_web_md")
 nlp = spacy.load("en_core_web_md")
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'quiet-radius-416123-dced0b64f239.json'
