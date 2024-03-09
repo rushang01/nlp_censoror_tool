@@ -7,8 +7,8 @@ import os
 import pyap
 from spacy.matcher import Matcher
 from google.cloud import language_v1
-import en_core_web_md
 import phonenumbers
+import spacy.cli
 
 
 name_count = 0
@@ -17,7 +17,8 @@ date_count = 0
 phone_count = 0
 
 # Load spaCy model
-nlp = en_core_web_md.load()
+spacy.cli.download("en_core_web_lg")
+nlp = spacy.load("en_core_web_lg")
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'quiet-radius-416123-dced0b64f239.json'
 
