@@ -7,7 +7,6 @@ import os
 import pyap
 from spacy.matcher import Matcher
 from google.cloud import language_v1
-import phonenumbers
 import spacy.cli
 
 
@@ -15,10 +14,12 @@ name_count = 0
 address_count = 0
 date_count = 0
 phone_count = 0
+email_name_count = 0
+
 
 # Load spaCy model
-spacy.cli.download("en_core_web_lg")
-nlp = spacy.load("en_core_web_lg")
+# spacy.cli.download("en_core_web_md")
+nlp = spacy.load("en_core_web_md")
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = 'quiet-radius-416123-dced0b64f239.json'
 
@@ -35,6 +36,7 @@ def analyze_entities(text):
 
 
 def censor_email_names(doc, content):
+    global email_name_count
     # Define a pattern for matching email addresses
     email_pattern = [{"LIKE_EMAIL": True}]
     matcher = Matcher(nlp.vocab)
@@ -48,14 +50,12 @@ def censor_email_names(doc, content):
         name_parts = re.split(r'[.\-_]', email.split('@')[0])
         name_parts_str = ' '.join(name_parts)
         
-        # print(name_parts_str)
         doc = nlp(name_parts_str)
         for ent in doc.ents:
             if ent.label_ == 'PERSON':
-               
                 # Replace "name1 name2" with name1.name2 to match with the email names in text
                 content = content.replace(ent.text.replace(' ','.'), '█' * len(ent.text))
-
+                email_name_count+=1
     return content    
 
 def spacy_censor_by_entity_type(content,flags):
@@ -63,11 +63,11 @@ def spacy_censor_by_entity_type(content,flags):
     global name_count
     global address_count
     global date_count
-    global phone_count
     
     name_entities = ['PERSON']
     address_entities = ['GPE','LOC','FAC']
     date_entities = ['DATE']
+    
 
     doc = nlp(content)
 
@@ -103,6 +103,8 @@ def google_nlp_censor_by_entity_type(content,flags):
     name_entities = [language_v1.Entity.Type.PERSON]
     address_entities = [language_v1.Entity.Type.ADDRESS]
     date_entities = [language_v1.Entity.Type.DATE]
+    phone_number_entities = [language_v1.Entity.Type.PHONE_NUMBER]
+    
 
     if 'address' in flags:
         entity_types.extend(address_entities)
@@ -111,8 +113,10 @@ def google_nlp_censor_by_entity_type(content,flags):
         entity_types.extend(name_entities)
     if 'dates' in flags:
         entity_types.extend(date_entities)
+    if 'phones' in flags:
+        entity_types.extend(phone_number_entities)
+
     response = analyze_entities(content)
-    # print(response)
     for entity in response.entities:
         if entity.type_ in entity_types:
             content = content.replace(entity.name, '█' * len(entity.name))
@@ -122,29 +126,16 @@ def google_nlp_censor_by_entity_type(content,flags):
                 address_count += 1
             if entity.type_ in date_entities:
                 date_count += 1
+            if entity.type_ in phone_number_entities:
+                phone_count += 1
     return content
 
 def censor_text(content, flags):
-    global name_count
-    global address_count
-    global date_count
-    global phone_count
-
     #PyAp layer to catch and censor addresses.
     if 'address' in flags:
         addresses = pyap.parse(content, country='US')
         for address in addresses:
             content = content.replace(str(address),'█'*len(str(address)))
-
-    #Regex to catch and censor phone numbers
-    if 'phones' in flags:
-        for match in phonenumbers.PhoneNumberMatcher(content, None):
-            phone = phonenumbers.format_number(match.number, phonenumbers.PhoneNumberFormat.E164)
-            # Calculate the length of the formatted phone number for replacement
-            replacement = '█' * len(phone)
-            # Replace the original text that matched the phone number
-            content = content[:match.start] + replacement + content[match.end:]
-            phone_count += 1
 
     # Censor names,addresses or dates using spaCy's named entity recognition
     content = spacy_censor_by_entity_type(content,flags)
@@ -159,16 +150,19 @@ def stats(file):
     global address_count
     global date_count
     global phone_count
+    global email_name_count
 
     stats_content = [
                      f"File: {file}\n",
-                     f"Name Count: {name_count}\n", 
+                     f"Name Count: {name_count}\n",
+                     f"Count of names in emails: {email_name_count}\n", 
                      f"Address Count: {address_count}\n",
                      f"Date Count: {date_count}\n",
                      f"Phone Count: {phone_count}\n\n",
                     ]
 
     name_count = 0
+    email_name_count = 0
     address_count = 0
     date_count = 0
     phone_count = 0
@@ -178,10 +172,6 @@ def stats(file):
 
 
 def process_files(input_pattern, output_dir, censor_flags, stats_output):
-    global name_count
-    global address_count
-    global date_count
-    global phone_count
 
     stats_path = os.path.join(output_dir, "stats.txt")
     if os.path.exists(stats_path):

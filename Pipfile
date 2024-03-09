@@ -10,7 +10,6 @@ pytest = "*"
 spacy = "*"
 pyap = "*"
 google-cloud-language = "*"
-phonenumbers = "*"
 
 [requires]
 python_version = "*"
