@@ -1,10 +1,10 @@
-#CIS 6930, Spring 2024 Assignment 1: Censoror 
+# CIS 6930, Spring 2024 Assignment 1: Censoror 
 By Rushang Sunil Chiplunkar
 
-##Introduction
+## Introduction
 The Censoror is a sophisticated data processing tool designed to automate the redaction of sensitive information from text documents. This Python-based application ensures the confidentiality of personal names, dates, phone numbers, and addresses in documents such as the Enron Email Dataset.
 
-##Installation and Setup
+## Installation and Setup
 Before running The Censoror, please ensure python and pipenv are installed on your system. Follow these steps to set up the project:
 
 Clone the repository to your local machine.
@@ -14,16 +14,22 @@ Usage
 To censor sensitive information from text files within a directory, use the following command:
 pipenv run python censoror.py --input '*.txt' --names --dates --phones --address --output 'files/' --stats stderr
 
-##Parameters
+## Parameters
 --input: Specifies the glob pattern for input text files.
+
 --output: Directory where the censored files will be stored.
+
 --names: Censors any detected names.
+
 --dates: Censors date formats.
+
 --phones: Censors phone numbers in various formats.
+
 --address: Censors physical addresses.
+
 --stats: Specifies the output for censorship statistics. Options include 'stdout', 'stderr', or a specified file path.
 
-##Censorship Flags and Characters
+## Censorship Flags and Characters
 The Censoror tool applies specific parameters to each censorship flag:
 
 Names and Addresses are identified through spaCy's Named Entity Recognition and Google NLP for email names.
@@ -31,27 +37,27 @@ Dates are detected via regular expressions and natural language processing techn
 Phone numbers are found using the Google NLP library for comprehensive format coverage.
 The censored characters are replaced with the Unicode full block character █ (U+2588) to maintain the original text's layout while ensuring anonymity. Spaces between censored words, such as names, are also redacted to prevent partial information disclosure.
 
-##Statistics Output
+## Statistics Output
 The --stats parameter enables users to output a summary of the censorship process to either a file, standard output, or standard error, detailing the counts and types of terms censored. This feature aids in understanding the extent of redactions made and in debugging. The stats output format has been designed to include the count of censored items grouped by flags for more detailed analysis.
 
 stdout: Directs the summary to the standard output stream. Use --stats stdout for this  behavior.
 stderr: Directs the summary to the standard error output stream. Use --stats stderr.
 File Path: Directs the summary to a specified file. Do not include "stdout" or "stderr" in your command if you wish to get a stats.txt file under your output directory.
 
-##Dataset
+## Dataset
 For testing, the Enron Email Dataset is recommended. Please utilize a manageable subset since it has an extensive size.
 
-##Documentation and Assumptions
+## Documentation and Assumptions
 This README includes detailed setup and usage instructions, ensuring ease of use. During the development of The Censoror, several assumptions were made:
 
 Sensitive information is primarily contained within the text and does not include images or non-text elements.
 The spaCy model and Google NLP provide sufficient coverage for named entity recognition, albeit with potential limitations in detecting less conventional names or addresses.
 
-##Known Bugs and External Resources
+## Known Bugs and External Resources
 Bugs: Few entities are not censored correctly, while few others may be censored incorrectly. These are due to limitations of NLP and the NLP libraries used. spaCy and Google NLP are both used in this project to catch most entities that need to be censored. 
 External resources such as spaCy documentation, Google Cloud Natural Language API documentation, and Python's official documentation were extensively used.
 
-##Testing
+## Testing
 Tests are structured to cover each feature individually, ensuring the correctness of the censoring process across various document types and contents. Tests can be executed with the command pipenv run python -m pytest.
 
 test_address.py
@@ -72,5 +78,5 @@ test_phones.py
 Purpose: Assesses the tool's capability to censor phone numbers in standard formats.
 Method: test_censor_phone_number ensures that a phone number is fully censored, with a placeholder substituting the original number.
 
-##Conclusion
+## Conclusion
 The Censoror represents a significant step forward in automating the sensitive information redaction process, combining advanced NLP techniques with user-friendly operation. This tool is poised to streamline privacy protection efforts in a wide range of document processing contexts.
