@@ -29,6 +29,62 @@ pipenv run python censoror.py --input '*.txt' --names --dates --phones --address
 
 --stats: Specifies the output for censorship statistics. Options include 'stdout', 'stderr', or a specified file path.
 
+# Function Descriptions
+
+## `analyze_entities(text)`
+- **Purpose**: Utilizes the Google Natural Language API to analyze and identify entities within the given text, returning a response with recognized entities and their types (e.g., person, location).
+- **Parameters**: 
+  - `text` (str): The text content to be analyzed for entities.
+- **Returns**: Response from the Google Natural Language API containing detected entities.
+
+## `censor_email_names(doc, content)`
+- **Purpose**: Detects email addresses in the text and censors parts recognized as names, updating the global count of names found within emails.
+- **Parameters**: 
+  - `doc` (Doc): A spaCy Doc object representing the parsed content.
+  - `content` (str): The original text content.
+- **Returns**: Text content with censored email names.
+
+## `spacy_censor_by_entity_type(content, flags)`
+- **Purpose**: Censors entities in the text based on specified flags using spaCy's Named Entity Recognition (NER), handling names, addresses, and dates, and updates global counts for each entity type.
+- **Parameters**: 
+  - `content` (str): The text content to be censored.
+  - `flags` (list): A list of flags indicating which entity types to censor.
+- **Returns**: Text content with specified entities censored.
+
+## `google_nlp_censor_by_entity_type(content, flags)`
+- **Purpose**: Complements spaCy's NER by using Google Natural Language API to detect and censor additional entities not covered or missed by spaCy, focusing on names, addresses, dates, and phone numbers, and updating global counts for each.
+- **Parameters**: 
+  - `content` (str): The text content to be censored.
+  - `flags` (list): A list of flags indicating which entity types to censor.
+- **Returns**: Text content with additional entities censored based on Google's NLP analysis.
+
+## `censor_text(content, flags)`
+- **Purpose**: Orchestrates the overall text censoring process by combining spaCy NER, Google NLP, and PyAP for address parsing, ensuring all specified entity types are censored within the text.
+- **Parameters**: 
+  - `content` (str): The text content to be censored.
+  - `flags` (list): A list of flags indicating which entity types to censor.
+- **Returns**: Fully censored text content according to the specified flags.
+
+## `stats(file)`
+- **Purpose**: Generates a summary of censorship statistics for a given file, including counts of censored names, addresses, dates, phone numbers, and email names.
+- **Parameters**: 
+  - `file` (str): The name of the file being processed.
+- **Returns**: A formatted string containing the statistics summary for the processed file.
+
+## `process_files(input_pattern, output_dir, censor_flags, stats_output)`
+- **Purpose**: Processes multiple files based on a glob pattern, applying censorship according to specified flags, outputs censored files and statistics as per the user's choice (`stdout`, `stderr`, or a file).
+- **Parameters**: 
+  - `input_pattern` (str): A glob pattern specifying the files to process.
+  - `output_dir` (str): The directory where censored files will be stored.
+  - `censor_flags` (dict): A dictionary of flags indicating which entity types to censor.
+  - `stats_output` (str): Specifies where to output the statistics summary (`stdout`, `stderr`, or a file path).
+- **Side Effects**: Writes censored files to the specified output directory and outputs censorship statistics as directed.
+
+## `main()`
+- **Purpose**: Entry point for the script, parsing command-line arguments, setting up the environment, and initiating file processing with specified parameters.
+- **Side Effects**: Executes the censorship process on specified files and outputs results accordingly.
+
+
 ## Censorship Flags and Characters
 The Censoror tool applies specific parameters to each censorship flag:
 
