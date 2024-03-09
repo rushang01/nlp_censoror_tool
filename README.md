@@ -12,6 +12,8 @@ Navigate to the project directory and run pipenv install to set up the virtual e
 
 Usage
 To censor sensitive information from text files within a directory, use the following command:
+
+
 pipenv run python censoror.py --input '*.txt' --names --dates --phones --address --output 'files/' --stats stderr
 
 ## Parameters
