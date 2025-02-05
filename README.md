@@ -14,7 +14,7 @@ Usage
 To censor sensitive information from text files within a directory, use the following command:
 
 
-pipenv run python censoror.py --input '*.txt' --names --dates --phones --address --output 'files/' --stats stderr
+pipenv run python censoror_tool.py --input '*.txt' --names --dates --phones --address --output 'files/' --stats stderr
 
 ## Parameters
 --input: Specifies the glob pattern for input text files.

@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-	name='assignment1',
+	name='censoror_tool',
 	version='1.0',
 	author='Rushang Sunil Chiplunkar',
 	author_email='chiplun.rushangs@ufl.edu',
