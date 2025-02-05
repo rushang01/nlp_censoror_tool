@@ -1,4 +1,4 @@
-# CIS 6930, Spring 2024 Assignment 1: Censoror 
+# Censoror Tool Using NLP
 By Rushang Sunil Chiplunkar
 
 ## Introduction
